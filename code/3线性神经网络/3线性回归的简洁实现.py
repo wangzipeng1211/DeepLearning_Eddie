@@ -1,7 +1,7 @@
 import numpy as np
 import torch
-from torch.utils import data
 from d2l import torch as d2l
+from torch.utils import data
 
 # ================================================
 # 3.3.1 生成数据集
@@ -15,14 +15,16 @@ print('features:', features[0],'\nlabel:', labels[0])
 # ================================================
 # 3.3.2 读取数据集
 # ================================================
-def load_array(data_arrays, batch_size, is_train=True):  #@save
+# 将features和labels作为API的参数传递，并通过数据迭代器指定batch_size。 
+# 此外，布尔值is_train表示是否希望数据迭代器对象在每个迭代周期内打乱数据。
+def load_array(data_arrays, batch_size, is_train=True):
     """构造一个PyTorch数据迭代器"""
     dataset = data.TensorDataset(*data_arrays)
     return data.DataLoader(dataset, batch_size, shuffle=is_train)
 
 batch_size = 10
 data_iter = load_array((features, labels), batch_size)
-
+# 读取并打印第一个小批量样本
 # 使用iter构造Python迭代器，并使用next从迭代器中获取第一项。
 print(next(iter(data_iter)))
 
@@ -37,7 +39,7 @@ from torch import nn
 # 当给定输入数据时，Sequential实例将数据传入到第一层， 然后将第一层的输出作为第二层的输入，以此类推。 
 # 在下面的例子中，我们的模型只包含一个层，因此实际上不需要Sequential。 
 # 但是由于以后几乎所有的模型都是多层的，在这里使用Sequential会让你熟悉“标准的流水线”。
-net = nn.Sequential(nn.Linear(2, 1))
+net = nn.Sequential(nn.Linear(2, 1)) # 输入维度是2，输出维度是1
 
 
 # ================================================
@@ -58,6 +60,8 @@ loss = nn.MSELoss() # 均方误差使用的是MSELoss类
 # ================================================
 # 3.3.6 定义优化算法    
 # ================================================
+# 实例化一个SGD实例时，我们要指定优化的参数 （可通过net.parameters()从我们的模型中获得）以及优化算法所需的超参数字典。 
+# 小批量随机梯度下降只需要设置lr值，这里设置为0.03。
 trainer = torch.optim.SGD(net.parameters(), lr=0.02)
 
 
@@ -68,9 +72,9 @@ num_epochs = 3
 for epoch in range(num_epochs):
     for X, y in data_iter:
         l = loss(net(X), y)
-        trainer.zero_grad()
-        l.backward()
-        trainer.step()
+        trainer.zero_grad() # 调用zero_grad函数来清空梯度
+        l.backward()   # 调用backward函数来计算梯度
+        trainer.step() # 调用step函数来更新模型参数
     l = loss(net(features), labels)
     print(f'epoch {epoch + 1}, loss {l:f}')
 
