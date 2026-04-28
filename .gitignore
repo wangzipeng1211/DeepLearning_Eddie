@@ -29,3 +29,5 @@ env/
 .vscode/
 .idea/
 *.swp
+
+code/data/FashionMNIST/
